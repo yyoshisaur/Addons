@@ -43,8 +43,10 @@ settings = config.load(defaults)
 local icon_size = (settings.size == 20 or defaults.size == 20) and 20 or 10
 local party_buffs = {'p1', 'p2', 'p3', 'p4', 'p5'}
 
-enable_buffs = S{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,28,29,30,31,33,37,40,41,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,144,145,146,147,148,149,156,167,168,174,175,177,186,192,193,194,223,404,540,557,558,559,560,561,562,563,564,565,566,567,572}
-
+local enable_buffs_init = T{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,28,29,30,31,33,37,40,41,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,144,145,146,147,148,149,156,167,168,174,175,177,186,192,193,194,223,404,540,557,558,559,560,561,562,563,564,565,566,567,572}
+local enable_buffs = enable_buffs_init
+local brd_buffs = T{195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,218,219,220,221,222}
+local storm_buffs = T{178,179,180,181,182,183,184,185}
 do
     local x_pos = windower.get_windower_settings().ui_x_res - 190
     for k = 1, 5 do
@@ -212,6 +214,19 @@ windower.register_event('addon command', function(...)
             else
                 windower.add_to_chat(207,'Icons size has to be 10 or 20.')
             end
+        elseif args[1]:lower() == 'brd' then
+            for i, v in ipairs(brd_buffs) do
+                table.insert(enable_buffs, v)
+            end
+            windower.add_to_chat(207,_addon.name..': Add brd buffs.')
+        elseif args[1]:lower() == 'storm' then
+            for i, v in ipairs(storm_buffs) do
+                table.insert(enable_buffs, v)
+            end
+            windower.add_to_chat(207,_addon.name..': Add storm buffs.')
+        elseif args[1]:lower() == 'init' then
+            enable_buffs = enable_buffs_init
+            windower.add_to_chat(207,_addon.name..': Init buff filter.')
         elseif args[1]:lower() == 'help' then
             windower.add_to_chat(207,"Partybuffs Commands:")
             windower.add_to_chat(207,"//pb|partybuffs size 10 (sets the icon size to 10x10)")
