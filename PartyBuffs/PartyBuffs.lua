@@ -43,6 +43,8 @@ settings = config.load(defaults)
 local icon_size = (settings.size == 20 or defaults.size == 20) and 20 or 10
 local party_buffs = {'p1', 'p2', 'p3', 'p4', 'p5'}
 
+enable_buffs = S{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,28,29,30,31,33,37,40,41,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,144,145,146,147,148,149,156,167,168,174,175,177,186,192,193,194,223,404,540,557,558,559,560,561,562,563,564,565,566,567,572}
+
 do
     local x_pos = windower.get_windower_settings().ui_x_res - 190
     for k = 1, 5 do
@@ -81,12 +83,14 @@ windower.register_event('incoming chunk', function(id, data)
         for  k = 0, 4 do
             local id = data:unpack('I', k*48+5)
             buffs[id] = {}
-            
             if id ~= 0 then
                 for i = 1, 32 do
                     local buff = data:byte(k*48+5+16+i-1) + 256*( math.floor( data:byte(k*48+5+8+ math.floor((i-1)/4)) / 4^((i-1)%4) )%4) -- Credit: Byrth, GearSwap
-                    if buffs[id][i] ~= buff then
-                        buffs[id][i] = buff
+                    
+                    if enable_buffs:contains(buff) then
+                        if buffs[id][i] ~= buff then
+                            buffs[id][i] = buff
+                        end
                     end
                 end
             end
@@ -118,7 +122,7 @@ function Update()
    
     for k = 1, 5 do
         local member = party[key_indices[k]]
-        
+        j = 1
         for image, i in party_buffs[k]:it() do
             if member then
                 if buffs[member_table[member.name]] and buffs[member_table[member.name]][i] then
@@ -140,13 +144,17 @@ function Update()
                         -- Adjust position for party member count
                         if party_info.party1_count > 1 then
                             local pt_y_pos = party_buffs_y_pos[party_info.party1_count] 
-                            local x = (icon_size == 20 and x_pos - (i*20)) or (i <= 16 and x_pos - (i*10)) or x_pos - ((i-16)*10)
-                            local y = (icon_size == 20 and pt_y_pos + ((k-1)*20)) or (i <= 16 and pt_y_pos + ((k-1)*20)) or  pt_y_pos + (((k-1)*20)+10)
+                            local x = (icon_size == 20 and x_pos - (j*20)) or (j <= 16 and x_pos - (j*10)) or x_pos - ((j-16)*10)
+                            local y = (icon_size == 20 and pt_y_pos + ((k-1)*20)) or (j <= 16 and pt_y_pos + ((k-1)*20)) or  pt_y_pos + (((k-1)*20)+10)
                             image:pos_x(x)
                             image:pos_y(y)
                         end
                         image:show()
+                        j = j + 1
                     end
+                else
+                    image:clear()
+                    image:hide()
                 end
             else
                 image:clear()
